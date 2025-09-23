@@ -6,6 +6,7 @@ import { MenuGrid } from "@/components/MenuGrid";
 import { ProductModal } from "@/components/ProductModal";
 import { Cart } from "@/components/Cart";
 import { Checkout } from "@/components/Checkout";
+import { Button } from "@/components/ui/button";
 import { MenuItem } from "@/stores/useCartStore";
 import pizzaMediaImg from "@/assets/pizza-media.jpg";
 import pizzaDoisSaboresImg from "@/assets/pizza-dois-sabores.jpg";
@@ -126,21 +127,57 @@ const Index = () => {
       />
 
       {/* Footer */}
-      <footer className="bg-wood text-wood-foreground py-12">
-        <div className="container mx-auto px-4 text-center">
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold">Fornalli Pizzaria</h3>
-            <div className="space-y-2 text-sm">
-              <p>📍 Rua Vereador Wadislau Bugalski, 4813</p>
-              <p>Almirante Tamandaré, PR</p>
-              <p>📞 (41) 99800-8720</p>
-              <p>🕒 Terça a Domingo • 18h às 23h</p>
-            </div>
-            <div className="pt-4 border-t border-wood-foreground/20">
-              <p className="text-xs opacity-80">
-                © 2024 Fornalli Pizzaria. Feito com ❤️ para você.
+      <footer className="bg-gradient-red-hero text-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+            
+            {/* Logo and info */}
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold">Fornalli Pizzaria</h3>
+              <p className="text-white/80">
+                A melhor pizza artesanal de Almirante Tamandaré, 
+                feita com ingredientes frescos e muito amor.
               </p>
             </div>
+
+            {/* Contact info */}
+            <div className="space-y-4">
+              <h4 className="text-xl font-semibold">Contato</h4>
+              <div className="space-y-2 text-white/80">
+                <p>📍 Rua Vereador Wadislau Bugalski, 4813</p>
+                <p>Almirante Tamandaré, PR</p>
+                <p>📞 (41) 99800-8720</p>
+                <p>🕒 Terça a Domingo • 18h às 23h</p>
+              </div>
+            </div>
+
+            {/* Social and actions */}
+            <div className="space-y-4">
+              <h4 className="text-xl font-semibold">Siga-nos</h4>
+              <div className="flex justify-center md:justify-start gap-4">
+                <Button variant="outline" size="icon" className="bg-white/10 border-white/20 text-white hover:bg-white hover:text-primary">
+                  📘
+                </Button>
+                <Button variant="outline" size="icon" className="bg-white/10 border-white/20 text-white hover:bg-white hover:text-primary">
+                  📷
+                </Button>
+              </div>
+              <Button 
+                variant="secondary" 
+                className="w-full md:w-auto"
+                asChild
+              >
+                <a href="https://wa.me/5541998008720" target="_blank" rel="noopener noreferrer">
+                  Pedir pelo WhatsApp
+                </a>
+              </Button>
+            </div>
+          </div>
+          
+          <div className="border-t border-white/20 mt-12 pt-8 text-center">
+            <p className="text-white/60">
+              © 2024 Fornalli Pizzaria. Feito com ❤️ para você.
+            </p>
           </div>
         </div>
       </footer>

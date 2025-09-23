@@ -68,12 +68,15 @@ export default {
         'gradient-secondary': 'var(--gradient-secondary)',
         'gradient-hero': 'var(--gradient-hero)',
         'gradient-card': 'var(--gradient-card)',
+        'gradient-red-hero': 'var(--gradient-red-hero)',
+        'gradient-warm': 'var(--gradient-warm)',
       },
       boxShadow: {
         'primary': 'var(--shadow-primary)',
         'secondary': 'var(--shadow-secondary)',
         'card-custom': 'var(--shadow-card)',
         'glow': 'var(--shadow-glow)',
+        'red': 'var(--shadow-red)',
       },
       borderRadius: {
         lg: "var(--radius)",

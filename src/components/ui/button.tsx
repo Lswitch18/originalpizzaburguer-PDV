@@ -9,13 +9,13 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-primary text-primary-foreground hover:shadow-primary hover:scale-105 transform transition-bounce",
+        default: "bg-gradient-primary text-primary-foreground hover:shadow-red hover:scale-105 transform transition-bounce",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-primary-foreground",
+        outline: "border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-primary-foreground transition-smooth",
         secondary: "bg-gradient-secondary text-secondary-foreground hover:shadow-secondary hover:scale-105 transform transition-bounce",
         ghost: "hover:bg-accent/20 hover:text-accent transition-smooth",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-gradient-hero text-white font-bold py-4 px-8 rounded-xl shadow-glow hover:scale-110 transform transition-bounce text-lg",
+        hero: "bg-gradient-red-hero text-white font-bold py-6 px-10 rounded-2xl shadow-red hover:scale-110 transform transition-elastic text-xl border-2 border-white/20",
         cart: "bg-wood text-wood-foreground hover:bg-wood/90 shadow-card-custom",
         whatsapp: "bg-green-500 text-white hover:bg-green-600 hover:scale-105 transform transition-bounce",
       },

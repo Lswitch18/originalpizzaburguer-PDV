@@ -13,24 +13,32 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4 py-3">
+    <header className="sticky top-0 z-50 w-full bg-white shadow-sm">
+      <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-3">
             <img 
               src={fornalliLogo} 
               alt="Fornalli Pizzaria Logo" 
-              className="h-12 w-12 rounded-full object-cover shadow-card-custom"
+              className="h-14 w-14 rounded-full object-cover shadow-card-custom"
             />
             <div>
-              <h1 className="text-xl font-bold gradient-text">Fornalli Pizzaria</h1>
+              <h1 className="text-2xl font-bold text-primary">Fornalli Pizzaria</h1>
               <p className="text-sm text-muted-foreground">Almirante Tamandaré</p>
             </div>
           </div>
 
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <a href="#home" className="text-foreground hover:text-primary transition-smooth font-medium">Home</a>
+            <a href="#sobre" className="text-foreground hover:text-primary transition-smooth font-medium">Sobre Nós</a>
+            <a href="#cardapio" className="text-foreground hover:text-primary transition-smooth font-medium">Cardápio</a>
+            <a href="#contato" className="text-foreground hover:text-primary transition-smooth font-medium">Contato</a>
+          </nav>
+
           {/* Contact & Cart */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             {/* WhatsApp Button */}
             <Button
               variant="whatsapp"
