@@ -52,7 +52,7 @@ export const Checkout = ({ isOpen, onClose }: CheckoutProps) => {
     
     try {
       // Create PIX payload (simplified version)
-      const pixKey = "<<PIX_KEY_AQUI>>"; // This would be replaced with actual PIX key
+      const pixKey = "(41) 99800-8720"; // PIX key from the business
       const amount = totalPrice.toFixed(2);
       const description = `Fornalli Pizzaria - Pedido`;
       

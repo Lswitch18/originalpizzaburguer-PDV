@@ -1,13 +1,14 @@
-import { Upload, Clock, MapPin } from "lucide-react";
+import { useState } from "react";
+import { Clock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { PizzaBuilder } from "@/components/PizzaBuilder";
+import { BeverageModal } from "@/components/BeverageModal";
 import heroPizzaImg from "@/assets/hero-pizza.png";
 
-interface HeroProps {
-  onUploadMenu: () => void;
-}
-
-export const Hero = ({ onUploadMenu }: HeroProps) => {
+export const Hero = () => {
+  const [isPizzaBuilderOpen, setIsPizzaBuilderOpen] = useState(false);
+  const [isBeverageModalOpen, setIsBeverageModalOpen] = useState(false);
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-red-hero wave-divider overflow-hidden">
       {/* Background decorative elements */}
@@ -38,22 +39,19 @@ export const Hero = ({ onUploadMenu }: HeroProps) => {
             <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center">
               <Button 
                 variant="hero" 
-                onClick={onUploadMenu}
+                onClick={() => setIsPizzaBuilderOpen(true)}
                 className="w-full sm:w-auto"
               >
-                <Upload className="h-5 w-5" />
-                Carregar Cardápio
+                🍕 Monte sua Pizza
               </Button>
               
               <Button 
                 variant="outline" 
                 size="lg"
-                asChild
+                onClick={() => setIsBeverageModalOpen(true)}
                 className="w-full sm:w-auto bg-white/10 border-white text-white hover:bg-white hover:text-primary backdrop-blur-sm"
               >
-                <a href="tel:+5541998008720">
-                  Ligar: (41) 99800-8720
-                </a>
+                🥤 Adicionar Bebidas
               </Button>
             </div>
           </div>
@@ -86,6 +84,16 @@ export const Hero = ({ onUploadMenu }: HeroProps) => {
           </div>
         </div>
       </div>
+
+      <PizzaBuilder 
+        isOpen={isPizzaBuilderOpen} 
+        onClose={() => setIsPizzaBuilderOpen(false)} 
+      />
+      
+      <BeverageModal 
+        isOpen={isBeverageModalOpen} 
+        onClose={() => setIsBeverageModalOpen(false)} 
+      />
 
       {/* Bottom info cards */}
       <div className="absolute bottom-20 left-0 right-0 z-20">

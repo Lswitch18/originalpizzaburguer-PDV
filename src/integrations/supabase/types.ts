@@ -14,7 +14,307 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      delivery_zones: {
+        Row: {
+          active: boolean
+          area_name: string
+          created_at: string
+          delivery_fee: number
+          delivery_time_minutes: number
+          id: string
+          postal_code_prefix: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          area_name: string
+          created_at?: string
+          delivery_fee?: number
+          delivery_time_minutes?: number
+          id?: string
+          postal_code_prefix: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          area_name?: string
+          created_at?: string
+          delivery_fee?: number
+          delivery_time_minutes?: number
+          id?: string
+          postal_code_prefix?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      flavors: {
+        Row: {
+          additional_price: number
+          available: boolean
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          additional_price?: number
+          available?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          additional_price?: number
+          available?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      order_item_flavors: {
+        Row: {
+          created_at: string
+          flavor_id: string
+          id: string
+          order_item_id: string
+        }
+        Insert: {
+          created_at?: string
+          flavor_id: string
+          id?: string
+          order_item_id: string
+        }
+        Update: {
+          created_at?: string
+          flavor_id?: string
+          id?: string
+          order_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_item_flavors_flavor_id_fkey"
+            columns: ["flavor_id"]
+            isOneToOne: false
+            referencedRelation: "flavors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_item_flavors_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          order_id: string
+          pizza_size_id: string | null
+          product_id: string | null
+          quantity: number
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id: string
+          pizza_size_id?: string | null
+          product_id?: string | null
+          quantity?: number
+          total_price: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id?: string
+          pizza_size_id?: string | null
+          product_id?: string | null
+          quantity?: number
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_pizza_size_id_fkey"
+            columns: ["pizza_size_id"]
+            isOneToOne: false
+            referencedRelation: "pizza_sizes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_name: string
+          customer_phone: string
+          delivery_address: string
+          delivery_fee: number
+          id: string
+          notes: string | null
+          payment_method: string
+          postal_code: string
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name: string
+          customer_phone: string
+          delivery_address: string
+          delivery_fee?: number
+          id?: string
+          notes?: string | null
+          payment_method: string
+          postal_code: string
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string
+          customer_phone?: string
+          delivery_address?: string
+          delivery_fee?: number
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          postal_code?: string
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pizza_sizes: {
+        Row: {
+          base_price: number
+          created_at: string
+          id: string
+          max_flavors: number
+          name: string
+          size_enum: Database["public"]["Enums"]["pizza_size"]
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          created_at?: string
+          id?: string
+          max_flavors?: number
+          name: string
+          size_enum: Database["public"]["Enums"]["pizza_size"]
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          created_at?: string
+          id?: string
+          max_flavors?: number
+          name?: string
+          size_enum?: Database["public"]["Enums"]["pizza_size"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          available: boolean
+          category: Database["public"]["Enums"]["product_category"]
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          available?: boolean
+          category: Database["public"]["Enums"]["product_category"]
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          updated_at?: string
+        }
+        Update: {
+          available?: boolean
+          category?: Database["public"]["Enums"]["product_category"]
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +323,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      order_status:
+        | "pending"
+        | "confirmed"
+        | "preparing"
+        | "delivering"
+        | "completed"
+        | "cancelled"
+      pizza_size: "broto" | "media" | "big" | "gigante"
+      product_category: "pizza" | "bebida" | "combo" | "entrada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +458,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      order_status: [
+        "pending",
+        "confirmed",
+        "preparing",
+        "delivering",
+        "completed",
+        "cancelled",
+      ],
+      pizza_size: ["broto", "media", "big", "gigante"],
+      product_category: ["pizza", "bebida", "combo", "entrada"],
+    },
   },
 } as const
