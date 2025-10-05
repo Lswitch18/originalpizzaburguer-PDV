@@ -49,6 +49,27 @@ export const Checkout = ({ isOpen, onClose }: CheckoutProps) => {
 
   const generatePixCode = async () => {
     setIsGeneratingPix(true);
+    try {
+      const { generatePixBRCode } = await import('@/utils/pixGenerator');
+      const brCode = generatePixBRCode(
+        '09916812900',
+        totalPrice,
+        'Fornalli Pizzaria',
+        'Almirante Tamandare',
+        `ORDER-${Date.now()}`
+      );
+      
+      setPixCode(brCode);
+      const qrUrl = await QRCode.toDataURL(brCode);
+      setQrCodeUrl(qrUrl);
+    } catch (error) {
+      console.error('Erro ao gerar PIX:', error);
+      toast({ title: "Erro ao gerar código PIX", variant: "destructive" });
+    } finally {
+      setIsGeneratingPix(false);
+    }
+  };
+    setIsGeneratingPix(true);
     
     try {
       // Create PIX payload (simplified version)

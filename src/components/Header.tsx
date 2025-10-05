@@ -31,10 +31,9 @@ export const Header = () => {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#home" className="text-foreground hover:text-primary transition-smooth font-medium">Home</a>
-            <a href="#sobre" className="text-foreground hover:text-primary transition-smooth font-medium">Sobre Nós</a>
-            <a href="#cardapio" className="text-foreground hover:text-primary transition-smooth font-medium">Cardápio</a>
-            <a href="#contato" className="text-foreground hover:text-primary transition-smooth font-medium">Contato</a>
+            <a href="/" className="text-foreground hover:text-primary transition-smooth font-medium">Home</a>
+            <a href="/cart" className="text-foreground hover:text-primary transition-smooth font-medium">Carrinho</a>
+            <a href="/admin" className="text-foreground hover:text-primary transition-smooth font-medium">Admin</a>
           </nav>
 
           {/* Contact & Cart */}

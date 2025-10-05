@@ -178,8 +178,10 @@ export type Database = {
           customer_phone: string
           delivery_address: string
           delivery_fee: number
+          external_code: string | null
           id: string
           notes: string | null
+          order_source: string | null
           payment_method: string
           postal_code: string
           status: Database["public"]["Enums"]["order_status"]
@@ -194,8 +196,10 @@ export type Database = {
           customer_phone: string
           delivery_address: string
           delivery_fee?: number
+          external_code?: string | null
           id?: string
           notes?: string | null
+          order_source?: string | null
           payment_method: string
           postal_code: string
           status?: Database["public"]["Enums"]["order_status"]
@@ -210,8 +214,10 @@ export type Database = {
           customer_phone?: string
           delivery_address?: string
           delivery_fee?: number
+          external_code?: string | null
           id?: string
           notes?: string | null
+          order_source?: string | null
           payment_method?: string
           postal_code?: string
           status?: Database["public"]["Enums"]["order_status"]
@@ -315,14 +321,58 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_order_stats: {
+        Args: { start_date?: string }
+        Returns: {
+          completed_orders: number
+          pending_orders: number
+          total_orders: number
+          total_revenue: number
+        }[]
+      }
+      get_top_pizzas: {
+        Args: { days?: number }
+        Returns: {
+          flavor_name: string
+          total_sold: number
+        }[]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "moderator" | "user"
       order_status:
         | "pending"
         | "confirmed"
@@ -459,6 +509,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "moderator", "user"],
       order_status: [
         "pending",
         "confirmed",
