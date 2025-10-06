@@ -69,39 +69,6 @@ export const Checkout = ({ isOpen, onClose }: CheckoutProps) => {
       setIsGeneratingPix(false);
     }
   };
-    setIsGeneratingPix(true);
-    
-    try {
-      // Create PIX payload (simplified version)
-      const pixKey = "(41) 99800-8720"; // PIX key from the business
-      const amount = totalPrice.toFixed(2);
-      const description = `Fornalli Pizzaria - Pedido`;
-      
-      // Simplified PIX code generation (in production, use proper BR Code library)
-      const pixPayload = `PIX|${pixKey}|${amount}|${description}`;
-      setPixCode(pixPayload);
-      
-      // Generate QR Code
-      const qrUrl = await QRCode.toDataURL(pixPayload, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: '#8B1538', // Primary color
-          light: '#FFFFFF'
-        }
-      });
-      setQrCodeUrl(qrUrl);
-    } catch (error) {
-      console.error('Error generating PIX code:', error);
-      toast({
-        title: "Erro ao gerar PIX",
-        description: "Não foi possível gerar o código PIX. Tente novamente.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGeneratingPix(false);
-    }
-  };
 
   const copyPixCode = () => {
     navigator.clipboard.writeText(pixCode);
