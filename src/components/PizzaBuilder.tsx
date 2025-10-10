@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Slider } from "@/components/ui/slider";
 import { Minus, Plus } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +35,7 @@ export const PizzaBuilder = ({ isOpen, onClose }: PizzaBuilderProps) => {
   const [flavors, setFlavors] = useState<Flavor[]>([]);
   const [selectedSize, setSelectedSize] = useState<PizzaSize | null>(null);
   const [selectedFlavors, setSelectedFlavors] = useState<Flavor[]>([]);
+  const [numberOfFlavors, setNumberOfFlavors] = useState(1);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
 
@@ -77,10 +79,10 @@ export const PizzaBuilder = ({ isOpen, onClose }: PizzaBuilderProps) => {
     if (isSelected) {
       setSelectedFlavors(selectedFlavors.filter(f => f.id !== flavor.id));
     } else {
-      if (selectedFlavors.length < selectedSize.max_flavors) {
+      if (selectedFlavors.length < numberOfFlavors) {
         setSelectedFlavors([...selectedFlavors, flavor]);
       } else {
-        toast.error(`Máximo ${selectedSize.max_flavors} sabores para este tamanho`);
+        toast.error(`Você selecionou ${numberOfFlavors} sabor(es). Remova um sabor para adicionar outro.`);
       }
     }
   };
@@ -125,6 +127,7 @@ export const PizzaBuilder = ({ isOpen, onClose }: PizzaBuilderProps) => {
   const resetForm = () => {
     setSelectedSize(null);
     setSelectedFlavors([]);
+    setNumberOfFlavors(1);
     setQuantity(1);
   };
 
@@ -158,6 +161,7 @@ export const PizzaBuilder = ({ isOpen, onClose }: PizzaBuilderProps) => {
                   onClick={() => {
                     setSelectedSize(size);
                     setSelectedFlavors([]);
+                    setNumberOfFlavors(1);
                   }}
                   className={`p-4 border rounded-lg text-left transition-colors ${
                     selectedSize?.id === size.id
@@ -177,11 +181,40 @@ export const PizzaBuilder = ({ isOpen, onClose }: PizzaBuilderProps) => {
             </div>
           </div>
 
-          {/* Sabores */}
+          {/* Seletor de Quantidade de Sabores */}
           {selectedSize && (
             <div>
               <h3 className="text-lg font-semibold mb-3">
-                Escolha os Sabores ({selectedFlavors.length}/{selectedSize.max_flavors})
+                Quantos sabores deseja? ({numberOfFlavors}/{selectedSize.max_flavors})
+              </h3>
+              <div className="space-y-4">
+                <Slider
+                  value={[numberOfFlavors]}
+                  onValueChange={(value) => {
+                    setNumberOfFlavors(value[0]);
+                    // Se reduzir a quantidade, remover sabores extras
+                    if (selectedFlavors.length > value[0]) {
+                      setSelectedFlavors(selectedFlavors.slice(0, value[0]));
+                    }
+                  }}
+                  min={1}
+                  max={selectedSize.max_flavors}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>1 sabor</span>
+                  <span>{selectedSize.max_flavors} sabores</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sabores */}
+          {selectedSize && numberOfFlavors > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">
+                Escolha os Sabores ({selectedFlavors.length}/{numberOfFlavors})
               </h3>
               <div className="grid grid-cols-1 gap-2">
                 {flavors.map((flavor) => {
