@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
 
     console.log('Root admin created:', newUser.user.id);
 
-    // Add admin role
+    // Add admin role (ignore if already exists)
     const { error: roleError } = await supabaseAdmin
       .from('user_roles')
       .insert({ 
@@ -83,9 +83,14 @@ Deno.serve(async (req) => {
         role: 'admin' 
       });
 
-    if (roleError) {
+    if (roleError && roleError.code !== '23505') {
+      // Only throw if it's not a duplicate key error
       console.error('Error adding admin role:', roleError);
       throw roleError;
+    }
+    
+    if (roleError?.code === '23505') {
+      console.log('Admin role already exists for this user');
     }
 
     console.log('Admin role added successfully');
