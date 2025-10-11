@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
 export const useAdmin = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -30,6 +32,8 @@ export const useAdmin = () => {
     if (user) {
       await checkAdminRole(user.id);
     } else {
+      // No user logged in, redirect to auth
+      navigate('/auth');
       setLoading(false);
     }
   };
