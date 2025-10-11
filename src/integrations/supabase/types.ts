@@ -380,8 +380,17 @@ export type Database = {
         | "delivering"
         | "completed"
         | "cancelled"
+        | "accepted"
+        | "out_for_delivery"
+        | "delivered"
       pizza_size: "broto" | "media" | "big" | "gigante"
-      product_category: "pizza" | "bebida" | "combo" | "entrada"
+      product_category:
+        | "pizza"
+        | "bebida"
+        | "combo"
+        | "entrada"
+        | "pastel"
+        | "porcao"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -517,9 +526,19 @@ export const Constants = {
         "delivering",
         "completed",
         "cancelled",
+        "accepted",
+        "out_for_delivery",
+        "delivered",
       ],
       pizza_size: ["broto", "media", "big", "gigante"],
-      product_category: ["pizza", "bebida", "combo", "entrada"],
+      product_category: [
+        "pizza",
+        "bebida",
+        "combo",
+        "entrada",
+        "pastel",
+        "porcao",
+      ],
     },
   },
 } as const

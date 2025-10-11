@@ -468,6 +468,8 @@ const Admin = () => {
                       <SelectItem value="bebida">Bebida</SelectItem>
                       <SelectItem value="combo">Combo</SelectItem>
                       <SelectItem value="entrada">Entrada</SelectItem>
+                      <SelectItem value="pastel">Pastel</SelectItem>
+                      <SelectItem value="porcao">Porção</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

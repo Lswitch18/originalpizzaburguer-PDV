@@ -112,9 +112,10 @@ const AdminOrders = () => {
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
       pending: { label: "Pendente", variant: "secondary" },
-      confirmed: { label: "Confirmado", variant: "default" },
+      accepted: { label: "Aceito", variant: "default" },
       preparing: { label: "Preparando", variant: "outline" },
-      delivering: { label: "Entregando", variant: "default" },
+      out_for_delivery: { label: "Saiu para Entrega", variant: "default" },
+      delivered: { label: "Entregue", variant: "default" },
       completed: { label: "Concluído", variant: "default" },
       cancelled: { label: "Cancelado", variant: "destructive" }
     };
@@ -171,9 +172,10 @@ const AdminOrders = () => {
                 <SelectContent>
                   <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="pending">Pendente</SelectItem>
-                  <SelectItem value="confirmed">Confirmado</SelectItem>
+                  <SelectItem value="accepted">Aceito</SelectItem>
                   <SelectItem value="preparing">Preparando</SelectItem>
-                  <SelectItem value="delivering">Entregando</SelectItem>
+                  <SelectItem value="out_for_delivery">Saiu para Entrega</SelectItem>
+                  <SelectItem value="delivered">Entregue</SelectItem>
                   <SelectItem value="completed">Concluído</SelectItem>
                   <SelectItem value="cancelled">Cancelado</SelectItem>
                 </SelectContent>
@@ -238,9 +240,10 @@ const AdminOrders = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="pending">Pendente</SelectItem>
-                        <SelectItem value="confirmed">Confirmado</SelectItem>
+                        <SelectItem value="accepted">Aceito</SelectItem>
                         <SelectItem value="preparing">Preparando</SelectItem>
-                        <SelectItem value="delivering">Entregando</SelectItem>
+                        <SelectItem value="out_for_delivery">Saiu para Entrega</SelectItem>
+                        <SelectItem value="delivered">Entregue</SelectItem>
                         <SelectItem value="completed">Concluído</SelectItem>
                         <SelectItem value="cancelled">Cancelado</SelectItem>
                       </SelectContent>
