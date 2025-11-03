@@ -17,6 +17,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAdmin } from "@/hooks/useAdmin";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Minus, Pizza, Wine, CookingPot } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
 
 interface Product {
   id: string;
@@ -25,6 +27,30 @@ interface Product {
   price: number;
   category: string;
   image_url: string | null;
+}
+
+interface PizzaSize {
+  id: string;
+  name: string;
+  size_enum: string;
+  base_price: number;
+  max_flavors: number;
+}
+
+interface Flavor {
+  id: string;
+  name: string;
+  description: string | null;
+  additional_price: number;
+}
+
+interface PizzaSelection {
+  productId: string;
+  sizeId: string;
+  sizeName: string;
+  flavorIds: string[];
+  flavorNames: string[];
+  price: number;
 }
 
 interface OrderFormData {
@@ -44,7 +70,14 @@ const AdminNewOrder = () => {
   const { isAdmin, loading, user } = useAdmin();
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<{[key: string]: number}>({});
+  const [pizzaSelections, setPizzaSelections] = useState<PizzaSelection[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [pizzaSizes, setPizzaSizes] = useState<PizzaSize[]>([]);
+  const [flavors, setFlavors] = useState<Flavor[]>([]);
+  const [pizzaModalOpen, setPizzaModalOpen] = useState(false);
+  const [selectedPizzaProduct, setSelectedPizzaProduct] = useState<Product | null>(null);
+  const [selectedSize, setSelectedSize] = useState<PizzaSize | null>(null);
+  const [selectedFlavors, setSelectedFlavors] = useState<string[]>([]);
   const [formData, setFormData] = useState<OrderFormData>({
     customer_name: '',
     customer_phone: '',
@@ -66,6 +99,8 @@ const AdminNewOrder = () => {
 
   useEffect(() => {
     loadProducts();
+    loadPizzaSizes();
+    loadFlavors();
   }, []);
 
   const loadProducts = async () => {
@@ -84,20 +119,91 @@ const AdminNewOrder = () => {
     }
   };
 
+  const loadPizzaSizes = async () => {
+    const { data, error } = await supabase
+      .from('pizza_sizes')
+      .select('*')
+      .order('base_price', { ascending: true });
+
+    if (error) {
+      console.error('Error loading pizza sizes:', error);
+    } else {
+      setPizzaSizes(data || []);
+    }
+  };
+
+  const loadFlavors = async () => {
+    const { data, error } = await supabase
+      .from('flavors')
+      .select('*')
+      .eq('available', true)
+      .order('name', { ascending: true });
+
+    if (error) {
+      console.error('Error loading flavors:', error);
+    } else {
+      setFlavors(data || []);
+    }
+  };
+
   const calculateTotal = () => {
-    const subtotal = Object.entries(selectedProducts).reduce((sum, [productId, quantity]) => {
+    const productsSubtotal = Object.entries(selectedProducts).reduce((sum, [productId, quantity]) => {
       const product = products.find(p => p.id === productId);
       return sum + (product ? product.price * quantity : 0);
     }, 0);
+    
+    const pizzasSubtotal = pizzaSelections.reduce((sum, pizza) => sum + pizza.price, 0);
+    
+    const subtotal = productsSubtotal + pizzasSubtotal;
     const deliveryFee = parseFloat(formData.delivery_fee) || 0;
     return { subtotal, total: subtotal + deliveryFee };
   };
 
+  const openPizzaModal = (product: Product) => {
+    setSelectedPizzaProduct(product);
+    setSelectedSize(null);
+    setSelectedFlavors([]);
+    setPizzaModalOpen(true);
+  };
+
+  const addPizza = () => {
+    if (!selectedPizzaProduct || !selectedSize || selectedFlavors.length === 0) {
+      toast.error("Selecione tamanho e sabor(es)");
+      return;
+    }
+
+    const flavorObjects = selectedFlavors.map(id => flavors.find(f => f.id === id)!);
+    const additionalPrice = Math.max(...flavorObjects.map(f => f.additional_price));
+    const totalPrice = selectedSize.base_price + additionalPrice;
+
+    const newPizza: PizzaSelection = {
+      productId: selectedPizzaProduct.id,
+      sizeId: selectedSize.id,
+      sizeName: selectedSize.name,
+      flavorIds: selectedFlavors,
+      flavorNames: flavorObjects.map(f => f.name),
+      price: totalPrice
+    };
+
+    setPizzaSelections(prev => [...prev, newPizza]);
+    setPizzaModalOpen(false);
+    toast.success("Pizza adicionada!");
+  };
+
+  const removePizza = (index: number) => {
+    setPizzaSelections(prev => prev.filter((_, i) => i !== index));
+  };
+
   const addProduct = (productId: string) => {
-    setSelectedProducts(prev => ({
-      ...prev,
-      [productId]: (prev[productId] || 0) + 1
-    }));
+    const product = products.find(p => p.id === productId);
+    if (product?.category === 'pizza') {
+      openPizzaModal(product);
+    } else {
+      setSelectedProducts(prev => ({
+        ...prev,
+        [productId]: (prev[productId] || 0) + 1
+      }));
+    }
   };
 
   const removeProduct = (productId: string) => {
@@ -151,7 +257,7 @@ const AdminNewOrder = () => {
       return;
     }
 
-    if (Object.keys(selectedProducts).length === 0) {
+    if (Object.keys(selectedProducts).length === 0 && pizzaSelections.length === 0) {
       toast.error("Selecione pelo menos um produto");
       return;
     }
@@ -187,9 +293,14 @@ const AdminNewOrder = () => {
     const productsList = Object.entries(selectedProducts).map(([productId, quantity]) => {
       const product = products.find(p => p.id === productId);
       return `${quantity}x ${product?.name} - R$ ${(product ? product.price * quantity : 0).toFixed(2)}`;
-    }).join('\n');
+    });
+
+    const pizzasList = pizzaSelections.map(pizza => 
+      `1x Pizza ${pizza.sizeName} - ${pizza.flavorNames.join(' + ')} - R$ ${pizza.price.toFixed(2)}`
+    );
     
-    return `${productsList}\n\n${formData.notes || ''}`.trim();
+    const allItems = [...productsList, ...pizzasList].join('\n');
+    return `${allItems}\n\n${formData.notes || ''}`.trim();
   };
 
   if (loading) {
@@ -303,7 +414,7 @@ const AdminNewOrder = () => {
               })}
             </div>
 
-            {Object.keys(selectedProducts).length > 0 && (
+            {(Object.keys(selectedProducts).length > 0 || pizzaSelections.length > 0) && (
               <div className="mt-6 p-4 bg-muted rounded-lg">
                 <h4 className="font-semibold mb-2">Resumo do Pedido</h4>
                 {Object.entries(selectedProducts).map(([productId, quantity]) => {
@@ -315,6 +426,26 @@ const AdminNewOrder = () => {
                     </div>
                   ) : null;
                 })}
+                {pizzaSelections.map((pizza, index) => (
+                  <div key={index} className="flex justify-between items-center text-sm py-1">
+                    <div className="flex-1">
+                      <div>Pizza {pizza.sizeName}</div>
+                      <div className="text-xs text-muted-foreground">{pizza.flavorNames.join(' + ')}</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span>R$ {pizza.price.toFixed(2)}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => removePizza(index)}
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
                 <div className="border-t mt-2 pt-2">
                   <div className="flex justify-between font-semibold">
                     <span>Subtotal</span>
@@ -458,6 +589,112 @@ const AdminNewOrder = () => {
             </form>
           </CardContent>
         </Card>
+
+        {/* Modal de Seleção de Pizza */}
+        <Dialog open={pizzaModalOpen} onOpenChange={setPizzaModalOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Personalizar Pizza</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-6">
+              {/* Seleção de Tamanho */}
+              <div>
+                <Label className="text-base font-semibold mb-3 block">Escolha o Tamanho</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {pizzaSizes.map((size) => (
+                    <Card
+                      key={size.id}
+                      className={`cursor-pointer transition-all ${
+                        selectedSize?.id === size.id ? 'ring-2 ring-primary' : ''
+                      }`}
+                      onClick={() => {
+                        setSelectedSize(size);
+                        setSelectedFlavors([]);
+                      }}
+                    >
+                      <CardContent className="p-4 text-center">
+                        <div className="font-semibold">{size.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          Até {size.max_flavors} sabor{size.max_flavors > 1 ? 'es' : ''}
+                        </div>
+                        <div className="text-lg font-bold text-primary mt-2">
+                          R$ {size.base_price.toFixed(2)}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+
+              {/* Seleção de Sabores */}
+              {selectedSize && (
+                <div>
+                  <Label className="text-base font-semibold mb-3 block">
+                    Escolha {selectedSize.max_flavors > 1 ? `até ${selectedSize.max_flavors} sabores` : 'o sabor'}
+                    {selectedFlavors.length > 0 && ` (${selectedFlavors.length}/${selectedSize.max_flavors})`}
+                  </Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {flavors.map((flavor) => {
+                      const isSelected = selectedFlavors.includes(flavor.id);
+                      const canSelect = selectedFlavors.length < selectedSize.max_flavors;
+                      
+                      return (
+                        <Card
+                          key={flavor.id}
+                          className={`cursor-pointer transition-all ${
+                            isSelected ? 'ring-2 ring-primary' : ''
+                          } ${!canSelect && !isSelected ? 'opacity-50' : ''}`}
+                          onClick={() => {
+                            if (isSelected) {
+                              setSelectedFlavors(prev => prev.filter(id => id !== flavor.id));
+                            } else if (canSelect) {
+                              setSelectedFlavors(prev => [...prev, flavor.id]);
+                            }
+                          }}
+                        >
+                          <CardContent className="p-4">
+                            <div className="font-semibold">{flavor.name}</div>
+                            {flavor.description && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {flavor.description}
+                              </div>
+                            )}
+                            {flavor.additional_price > 0 && (
+                              <div className="text-sm text-primary mt-2">
+                                +R$ {flavor.additional_price.toFixed(2)}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Botões de Ação */}
+              <div className="flex gap-3 pt-4 border-t">
+                <Button
+                  type="button"
+                  onClick={addPizza}
+                  disabled={!selectedSize || selectedFlavors.length === 0}
+                  className="flex-1"
+                >
+                  Adicionar Pizza
+                  {selectedSize && selectedFlavors.length > 0 && (
+                    <span className="ml-2">
+                      - R$ {(selectedSize.base_price + Math.max(...selectedFlavors.map(id => flavors.find(f => f.id === id)?.additional_price || 0))).toFixed(2)}
+                    </span>
+                  )}
+                </Button>
+                <Button type="button" variant="outline" onClick={() => setPizzaModalOpen(false)}>
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
