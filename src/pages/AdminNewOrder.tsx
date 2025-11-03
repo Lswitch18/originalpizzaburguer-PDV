@@ -44,6 +44,7 @@ const AdminNewOrder = () => {
   const { isAdmin, loading, user } = useAdmin();
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<{[key: string]: number}>({});
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [formData, setFormData] = useState<OrderFormData>({
     customer_name: '',
     customer_phone: '',
@@ -119,6 +120,23 @@ const AdminNewOrder = () => {
       default: return null;
     }
   };
+
+  const getCategoryLabel = (category: string) => {
+    switch(category) {
+      case 'pizza': return 'Pizzas';
+      case 'bebida': return 'Bebidas';
+      case 'pastel': return 'Pastéis';
+      case 'porcao': return 'Porções';
+      case 'combo': return 'Combos';
+      case 'entrada': return 'Entradas';
+      default: return category;
+    }
+  };
+
+  const categories = Array.from(new Set(products.map(p => p.category)));
+  const filteredProducts = categoryFilter === 'all' 
+    ? products 
+    : products.filter(p => p.category === categoryFilter);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,8 +224,32 @@ const AdminNewOrder = () => {
             <CardTitle>Selecionar Produtos</CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Barra de Filtros */}
+            <div className="flex gap-2 mb-6 flex-wrap">
+              <Button
+                type="button"
+                variant={categoryFilter === 'all' ? 'default' : 'outline'}
+                onClick={() => setCategoryFilter('all')}
+                className="flex items-center gap-2"
+              >
+                Todos ({products.length})
+              </Button>
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  type="button"
+                  variant={categoryFilter === category ? 'default' : 'outline'}
+                  onClick={() => setCategoryFilter(category)}
+                  className="flex items-center gap-2"
+                >
+                  {getCategoryIcon(category)}
+                  {getCategoryLabel(category)} ({products.filter(p => p.category === category).length})
+                </Button>
+              ))}
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {products.map((product) => {
+              {filteredProducts.map((product) => {
                 const quantity = selectedProducts[product.id] || 0;
                 return (
                   <Card 
