@@ -237,13 +237,13 @@ export default {
 
 ## 📝 Licença
 
-MIT License - Copyright (c) 2024 Wellynton Santos Jeronimo
+MIT License - Copyright (c) 2024
 
 ---
 
 ## 👨‍💻 Desenvolvedor
 
-**Wellynton Santos Jeronimo**
+**Desenvolvido por**
 
 - Systems Architect | DevOps Engineer
 - React | TypeScript | Node.js Specialist
